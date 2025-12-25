@@ -46,7 +46,7 @@ public class Program
         var app = builder.Build();
 
         // Endpoints
-        app.MapGet("/", () => "Azure midterm web app is running.");
+        app.MapGet("/", () => "Azure final web app is running.");
 
         app.MapGet("/debug-env", () =>
         {
