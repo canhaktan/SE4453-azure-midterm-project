@@ -1,0 +1,47 @@
+name: Build Docker Image and Push to ACR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout Repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Sign in to Azure
+      - name: Sign in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # 3. Login to Azure Container Registry
+      - name: Login to ACR
+        uses: azure/docker-login@v1
+        with:
+          login-server: acrfinalcanhaktan.azurecr.io
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      # 4. Build and Push Docker Image
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t acrfinalcanhaktan.azurecr.io/azure-final-app:${{ github.sha }} .
+          docker push acrfinalcanhaktan.azurecr.io/azure-final-app:${{ github.sha }}
+
+      # 5. Deploy from ACR to App Service
+      - name: Deploy from ACR to App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: canhaktan-final-app
+          images: acrfinalcanhaktan.azurecr.io/azure-final-app:${{ github.sha }}
+
+      # 6. Logout from Azure
+      - name: Azure Logout
+        run: |
+          az logout
