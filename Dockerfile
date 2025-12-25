@@ -29,6 +29,6 @@ COPY sshd_config /etc/ssh/sshd_config
 COPY start.sh /app/start.sh
 RUN chmod +x /app/start.sh
 
-EXPOSE 80 2222
+EXPOSE 8080 2222
 
 ENTRYPOINT ["/app/start.sh"]
